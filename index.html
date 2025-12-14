@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Warsztat Słów</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #0a0a0f;
+            --text-primary: #f5f0e8;
+            --text-muted: rgba(245, 240, 232, 0.4);
+            --accent: #c9a87c;
+            --accent-glow: rgba(201, 168, 124, 0.3);
+            --danger: #e85454;
+            --danger-glow: rgba(232, 84, 84, 0.3);
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100dvh;
+            position: relative;
+        }
+
+        /* Background */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            transition: opacity 1.5s ease;
+        }
+
+        .bg-layer.dimmed {
+            opacity: 0.3;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201, 168, 124, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 50% 100%, rgba(100, 80, 60, 0.06) 0%, transparent 50%),
+                var(--bg-deep);
+        }
+
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            top: 10%;
+            left: -10%;
+        }
+
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(150, 120, 100, 0.2) 0%, transparent 70%);
+            bottom: 20%;
+            right: -5%;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -20px) scale(1.05); }
+            50% { transform: translate(-20px, 30px) scale(0.95); }
+            75% { transform: translate(20px, 20px) scale(1.02); }
+        }
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            min-height: 100dvh;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.3s forwards;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .header.hidden {
+            opacity: 0 !important;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        .subtitle {
+            font-size: 0.7rem;
+            font-weight: 200;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+        }
+
+        /* Word display - always visible */
+        .word-stage {
+            position: relative;
+            width: 100%;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 1s ease;
+        }
+
+        .word-stage.compact {
+            min-height: 100px;
+            margin-bottom: 1rem;
+        }
+
+        .word-container {
+            position: relative;
+            padding: 1rem 2rem;
+        }
+
+        .frame {
+            position: absolute;
+            inset: -20px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .frame.visible { opacity: 1; }
+
+        .frame-corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--accent);
+            border-style: solid;
+            border-width: 0;
+            opacity: 0.3;
+        }
+
+        .frame-corner.tl { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+        .frame-corner.tr { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+        .frame-corner.bl { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+        .frame-corner.br { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
+
+        .word {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.2rem, 10vw, 4rem);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+            text-transform: lowercase;
+            position: relative;
+        }
+
+        .word-inner {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            filter: blur(8px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .word-inner.revealed {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        .word-inner.hiding {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+            filter: blur(8px);
+        }
+
+        .word-glow {
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .word-glow.active { opacity: 1; }
+
+        .placeholder {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .placeholder.hidden { display: none; }
+
+        .particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        @keyframes particleBurst {
+            0% { opacity: 0.8; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+        }
+
+        /* Controls area */
+        .controls {
+            width: 100%;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .controls.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        /* Mode buttons row */
+        .mode-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Action area - below word */
+        .action-area {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 1s ease;
+        }
+
+        .action-area.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Buttons */
+        .btn {
+            position: relative;
+            padding: 0.9rem 2rem;
+            background: transparent;
+            border: 1px solid rgba(201, 168, 124, 0.3);
+            color: var(--accent);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(201, 168, 124, 0.15);
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            padding: 0.9rem 1.2rem;
+        }
+
+        .btn-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .btn.active {
+            border-color: var(--accent);
+            background: rgba(201, 168, 124, 0.15);
+            box-shadow: 0 0 20px rgba(201, 168, 124, 0.2);
+        }
+
+        .btn-danger {
+            border-color: rgba(232, 84, 84, 0.3);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            border-color: var(--danger);
+            box-shadow: 0 0 30px var(--danger-glow);
+        }
+
+        .btn-danger::before {
+            background: linear-gradient(90deg, transparent, var(--danger-glow), transparent);
+        }
+
+        .btn-small {
+            padding: 0.6rem 1rem;
+            font-size: 0.65rem;
+        }
+
+        /* ========== WRITING MODE ========== */
+        .writing-panel {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            flex: 1;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .writing-panel.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .writing-setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem 0;
+        }
+
+        .writing-setup.hidden {
+            display: none;
+        }
+
+        .time-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .time-label {
+            font-size: 0.7rem;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .time-display {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .time-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-weight: 300;
+            color: var(--accent);
+            line-height: 1;
+            min-width: 2ch;
+            text-align: center;
+        }
+
+        .time-unit {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .slider-container {
+            width: 100%;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .time-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, 
+                var(--accent) 0%, 
+                var(--accent) var(--slider-progress, 0%), 
+                rgba(201, 168, 124, 0.2) var(--slider-progress, 0%), 
+                rgba(201, 168, 124, 0.2) 100%);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-deep);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .time-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px var(--accent-glow);
+        }
+
+        .time-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--bg-deep);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .time-slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .time-slider::-moz-range-track {
+            background: transparent;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            padding: 0 2px;
+        }
+
+        .slider-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .writing-editor {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            flex: 1;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .writing-editor.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+            opacity: 0.6;
+            transition: opacity 0.5s ease;
+        }
+
+        .timer-display {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+        }
+
+        .word-count {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .editor-area {
+            position: relative;
+            flex: 1;
+            min-height: 250px;
+        }
+
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 250px;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201, 168, 124, 0.1);
+            color: var(--text-primary);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            resize: none;
+            outline: none;
+            transition: border-color 0.5s ease, color 0.5s ease, opacity 0.5s ease;
+        }
+
+        .editor-textarea:focus {
+            border-color: rgba(201, 168, 124, 0.2);
+        }
+
+        .editor-textarea::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Gradual color transition for idle */
+        .editor-textarea {
+            --idle-progress: 0;
+            color: color-mix(in srgb, var(--text-primary) calc(100% - var(--idle-progress) * 100%), var(--danger) calc(var(--idle-progress) * 100%));
+        }
+
+        .editor-textarea.fading {
+            opacity: calc(1 - var(--idle-progress) * 0.8);
+        }
+
+        .danger-indicator {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--danger);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            letter-spacing: 0.1em;
+        }
+
+        .danger-indicator.visible {
+            opacity: 1;
+        }
+
+        /* Achievements / Badges */
+        .achievements {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+            min-height: 40px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem 0.8rem;
+            background: rgba(201, 168, 124, 0.08);
+            border: 1px solid rgba(201, 168, 124, 0.3);
+            color: var(--accent);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.85rem;
+            font-style: italic;
+            border-radius: 20px;
+            opacity: 0;
+            transform: scale(0.5) translateY(10px);
+            animation: badgeAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 0 20px rgba(201, 168, 124, 0.15);
+        }
+
+        .badge::before {
+            content: '✦';
+            margin-right: 0.4rem;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        @keyframes badgeAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(10px);
+            }
+            50% {
+                transform: scale(1.1) translateY(-5px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .badge-glow {
+            animation: badgeAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       badgeGlow 2s ease-in-out 0.8s infinite;
+        }
+
+        @keyframes badgeGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(201, 168, 124, 0.15);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(201, 168, 124, 0.3);
+            }
+        }
+
+        /* Badge celebration overlay */
+        .badge-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .badge-celebration.show {
+            animation: celebrationPulse 1.5s ease-out forwards;
+        }
+
+        .badge-celebration-inner {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-style: italic;
+            color: var(--accent);
+            text-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        @keyframes celebrationPulse {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        .writing-complete {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: center;
+            padding: 2rem 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .writing-complete.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .complete-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .complete-stats {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .saved-text-preview {
+            width: 100%;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201, 168, 124, 0.1);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: left;
+            color: var(--text-muted);
+        }
+
+        .complete-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ========== RECORDING MODE ========== */
+        .recording-panel {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 1.5rem;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .recording-panel.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .mic-visualizer {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid rgba(201, 168, 124, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        .mic-visualizer.recording {
+            border-color: var(--danger);
+            box-shadow: 0 0 40px var(--danger-glow);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .mic-visualizer svg {
+            width: 36px;
+            height: 36px;
+            stroke: var(--accent);
+            stroke-width: 1.5;
+            fill: none;
+            transition: stroke 0.5s ease;
+        }
+
+        .mic-visualizer.recording svg {
+            stroke: var(--danger);
+        }
+
+        .recording-timer {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            letter-spacing: 0.1em;
+        }
+
+        .recordings-list-section {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .recordings-header {
+            font-size: 0.6rem;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .recordings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .recording-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 0.9rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .recording-item:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(201, 168, 124, 0.2);
+        }
+
+        .recording-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .recording-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .recording-date {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+        }
+
+        .recording-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .btn-tiny {
+            padding: 0.4rem 0.5rem;
+            background: transparent;
+            border: 1px solid rgba(201, 168, 124, 0.2);
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .btn-tiny:hover {
+            background: rgba(201, 168, 124, 0.1);
+            border-color: var(--accent);
+        }
+
+        .btn-tiny svg {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .no-recordings {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        /* Utilities */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .hidden { display: none !important; }
+
+        @supports (padding: env(safe-area-inset-bottom)) {
+            .container {
+                padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer" id="bg-layer">
+        <div class="bg-gradient"></div>
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+    </div>
+    <div class="noise"></div>
+
+    <div class="container">
+        <header class="header" id="header">
+            <p class="subtitle">warsztat</p>
+            <h1 class="title">Słów</h1>
+        </header>
+
+        <!-- Word always visible -->
+        <div class="word-stage" id="word-stage">
+            <div class="word-container">
+                <div class="word-glow" id="word-glow"></div>
+                <div class="frame" id="frame">
+                    <div class="frame-corner tl"></div>
+                    <div class="frame-corner tr"></div>
+                    <div class="frame-corner bl"></div>
+                    <div class="frame-corner br"></div>
+                </div>
+                <div class="particles" id="particles"></div>
+                <p class="placeholder" id="placeholder">dotknij, by odkryć</p>
+                <div class="word">
+                    <span class="word-inner" id="word-inner"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls - hidden during writing -->
+        <div class="controls" id="controls">
+            <div class="mode-buttons">
+                <button class="btn" id="drawBtn">
+                    <span class="btn-text">Losuj</span>
+                </button>
+                <button class="btn btn-icon" id="speakBtn" title="Automatyczne czytanie">
+                    <span class="btn-text">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
+            <div class="mode-buttons" id="action-buttons" style="display: none;">
+                <button class="btn" id="writeBtn">
+                    <span class="btn-text">Pisz</span>
+                </button>
+                <button class="btn" id="recordModeBtn">
+                    <span class="btn-text">Nagraj</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Writing Panel -->
+        <div class="writing-panel" id="writing-panel">
+            <div class="writing-setup" id="writing-setup">
+                <div class="time-selector">
+                    <label class="time-label">Czas pisania</label>
+                    <div class="time-display">
+                        <span class="time-value" id="time-value">5</span>
+                        <span class="time-unit">minut</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" class="time-slider" id="writing-time" min="1" max="10" value="5">
+                        <div class="slider-labels">
+                            <span class="slider-label">1</span>
+                            <span class="slider-label">5</span>
+                            <span class="slider-label">10</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mode-buttons">
+                    <button class="btn" id="start-writing-btn">
+                        <span class="btn-text">Zacznij</span>
+                    </button>
+                    <button class="btn btn-small" id="cancel-writing-btn">
+                        <span class="btn-text">Anuluj</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="writing-editor" id="writing-editor">
+                <div class="editor-header">
+                    <span class="timer-display" id="writing-timer">05:00</span>
+                    <span class="word-count" id="word-count">0 słów</span>
+                </div>
+                <div class="editor-area">
+                    <textarea class="editor-textarea" id="editor-textarea" placeholder="Zacznij pisać..."></textarea>
+                    <div class="danger-indicator" id="danger-indicator">Pisz! Tekst zaraz zniknie...</div>
+                </div>
+                <div class="achievements" id="writing-achievements"></div>
+            </div>
+
+            <div class="writing-complete" id="writing-complete">
+                <h2 class="complete-title">Ukończono</h2>
+                <div class="complete-stats" id="complete-stats"></div>
+                <div class="saved-text-preview" id="saved-text-preview"></div>
+                <div class="complete-buttons">
+                    <button class="btn btn-small" id="copy-text-btn">
+                        <span class="btn-text">Kopiuj</span>
+                    </button>
+                    <button class="btn btn-small" id="new-session-btn">
+                        <span class="btn-text">Nowa sesja</span>
+                    </button>
+                    <button class="btn btn-small" id="back-to-word-btn">
+                        <span class="btn-text">Powrót</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recording Panel -->
+        <div class="recording-panel" id="recording-panel">
+            <div class="mic-visualizer" id="mic-visualizer">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+            </div>
+            <div class="recording-timer" id="recording-timer">00:00</div>
+            <div class="achievements" id="recording-achievements"></div>
+            <div class="mode-buttons">
+                <button class="btn btn-danger" id="record-btn">
+                    <span class="btn-text">Nagraj</span>
+                </button>
+                <button class="btn btn-small" id="back-from-record-btn">
+                    <span class="btn-text">Powrót</span>
+                </button>
+            </div>
+
+            <div class="recordings-list-section" id="recordings-list-section">
+                <p class="recordings-header">Twoje nagrania</p>
+                <div class="recordings-list" id="recordings-list">
+                    <p class="no-recordings">Brak nagrań</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badge Celebration Overlay -->
+    <div class="badge-celebration" id="badge-celebration">
+        <div class="badge-celebration-inner" id="badge-celebration-text"></div>
+    </div>
+
+    <script>
+        // ========== STATE ==========
+        let currentWord = '';
+        let autoSpeak = false;
+        let isAnimating = false;
+        let currentMode = 'word'; // word, writing, recording
+
+        // ========== ELEMENTS ==========
+        const bgLayer = document.getElementById('bg-layer');
+        const header = document.getElementById('header');
+        const wordStage = document.getElementById('word-stage');
+        const wordInner = document.getElementById('word-inner');
+        const wordGlow = document.getElementById('word-glow');
+        const frame = document.getElementById('frame');
+        const placeholder = document.getElementById('placeholder');
+        const particles = document.getElementById('particles');
+        const controls = document.getElementById('controls');
+        const actionButtons = document.getElementById('action-buttons');
+        const drawBtn = document.getElementById('drawBtn');
+        const speakBtn = document.getElementById('speakBtn');
+        const writeBtn = document.getElementById('writeBtn');
+        const recordModeBtn = document.getElementById('recordModeBtn');
+
+        // ========== WORDS ==========
+        const words = [
+            'przyjaźń', 'wstyd', 'tęsknota', 'radość', 'smutek', 
+            'nadzieja', 'strach', 'miłość', 'gniew', 'spokój',
+            'zazdrość', 'duma', 'wdzięczność', 'samotność', 'ekscytacja',
+            'melancholia', 'euforia', 'nostalgia', 'czułość', 'rezygnacja',
+            'podróż', 'sen', 'cisza', 'burza', 'świt',
+            'zmierzch', 'echo', 'cień', 'światło', 'mgła',
+            'deszcz', 'wiatr', 'płomień', 'fala', 'przestrzeń',
+            'czas', 'wieczność', 'chwila', 'przemiana', 'początek',
+            'wolność', 'prawda', 'piękno', 'odwaga', 'mądrość',
+            'siła', 'łagodność', 'harmonia', 'chaos', 'równowaga',
+            'intuicja', 'wyobraźnia', 'ciekawość', 'cierpliwość', 'spontaniczność',
+            'autentyczność', 'wrażliwość', 'kreatywność', 'determinacja', 'akceptacja',
+            'bliskość', 'zaufanie', 'lojalność', 'empatia', 'wspólnota',
+            'dialog', 'granica', 'połączenie', 'rozłąka', 'pojednanie',
+            'troska', 'wsparcie', 'obecność', 'nieobecność', 'pamięć',
+            'ocean', 'góra', 'las', 'pustynia', 'niebo',
+            'gwiazda', 'księżyc', 'horyzont', 'otchłań', 'źródło',
+            'rzeka', 'korzeń', 'kwiat', 'nasiono', 'gleba',
+            'wzrost', 'zanikanie', 'rozkwit', 'odrodzenie', 'spełnienie',
+            'poszukiwanie', 'odkrycie', 'utrata', 'powrót', 'wędrówka'
+        ];
+
+        const drawnWords = new Set();
+
+        function getRandomWord() {
+            const available = words.filter(w => !drawnWords.has(w));
+            if (available.length === 0) {
+                drawnWords.clear();
+                return words[Math.floor(Math.random() * words.length)];
+            }
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        function createParticles() {
+            particles.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 50 + Math.random() * 50;
+                particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+                particle.style.left = '50%';
+                particle.style.top = '50%';
+                particle.style.animation = `particleBurst 0.8s ease-out ${i * 0.02}s forwards`;
+                particles.appendChild(particle);
+            }
+        }
+
+        function speakWord() {
+            if (!currentWord) return;
+            const utterance = new SpeechSynthesisUtterance(currentWord);
+            utterance.lang = 'pl-PL';
+            utterance.rate = 0.8;
+            const voices = speechSynthesis.getVoices();
+            const polishVoice = voices.find(v => v.lang.startsWith('pl'));
+            if (polishVoice) utterance.voice = polishVoice;
+            speechSynthesis.speak(utterance);
+        }
+
+        function toggleAutoSpeak() {
+            autoSpeak = !autoSpeak;
+            speakBtn.classList.toggle('active', autoSpeak);
+        }
+
+        async function drawWord() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            if (wordInner.textContent) {
+                wordInner.classList.remove('revealed');
+                wordInner.classList.add('hiding');
+                wordGlow.classList.remove('active');
+                frame.classList.remove('visible');
+                await new Promise(r => setTimeout(r, 400));
+                wordInner.classList.remove('hiding');
+            }
+
+            placeholder.classList.add('hidden');
+            currentWord = getRandomWord();
+            drawnWords.add(currentWord);
+            wordInner.textContent = currentWord;
+
+            await new Promise(r => setTimeout(r, 100));
+            createParticles();
+            wordInner.classList.add('revealed');
+            wordGlow.classList.add('active');
+            
+            // Show action buttons after first word
+            actionButtons.style.display = 'flex';
+            
+            if (autoSpeak) setTimeout(() => speakWord(), 300);
+            setTimeout(() => frame.classList.add('visible'), 300);
+            setTimeout(() => isAnimating = false, 800);
+        }
+
+        // Event listeners for word mode
+        drawBtn.addEventListener('click', drawWord);
+        speakBtn.addEventListener('click', toggleAutoSpeak);
+        wordStage.addEventListener('click', (e) => {
+            if (currentMode === 'word' && !e.target.closest('.btn')) drawWord();
+        });
+
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+        }
+
+        // ========== MODE SWITCHING ==========
+        function enterWritingMode() {
+            if (!currentWord) return;
+            currentMode = 'writing';
+            
+            // Slow transitions
+            header.classList.add('hidden');
+            controls.classList.add('hidden');
+            bgLayer.classList.add('dimmed');
+            wordStage.classList.add('compact');
+            
+            setTimeout(() => {
+                document.getElementById('writing-panel').classList.add('active');
+            }, 500);
+        }
+
+        function exitWritingMode() {
+            currentMode = 'word';
+            
+            document.getElementById('writing-panel').classList.remove('active');
+            document.getElementById('writing-setup').classList.remove('hidden');
+            document.getElementById('writing-editor').classList.remove('active');
+            document.getElementById('writing-complete').classList.remove('active');
+            
+            setTimeout(() => {
+                header.classList.remove('hidden');
+                controls.classList.remove('hidden');
+                bgLayer.classList.remove('dimmed');
+                wordStage.classList.remove('compact');
+            }, 300);
+        }
+
+        function enterRecordingMode() {
+            if (!currentWord) return;
+            currentMode = 'recording';
+            
+            header.classList.add('hidden');
+            controls.classList.add('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('recording-panel').classList.add('active');
+            }, 500);
+        }
+
+        function exitRecordingMode() {
+            currentMode = 'word';
+            
+            document.getElementById('recording-panel').classList.remove('active');
+            
+            setTimeout(() => {
+                header.classList.remove('hidden');
+                controls.classList.remove('hidden');
+            }, 300);
+        }
+
+        writeBtn.addEventListener('click', enterWritingMode);
+        recordModeBtn.addEventListener('click', enterRecordingMode);
+        document.getElementById('cancel-writing-btn').addEventListener('click', exitWritingMode);
+        document.getElementById('back-to-word-btn').addEventListener('click', exitWritingMode);
+        document.getElementById('back-from-record-btn').addEventListener('click', exitRecordingMode);
+
+        // ========== WRITING MODULE ==========
+        let writingInterval = null;
+        let idleInterval = null;
+        let writingTimeLeft = 0;
+        let idleTime = 0;
+        let lastBadgeCount = 0;
+        const IDLE_DELETE = 8;
+
+        const writingSetup = document.getElementById('writing-setup');
+        const writingEditor = document.getElementById('writing-editor');
+        const writingComplete = document.getElementById('writing-complete');
+        const writingTimeInput = document.getElementById('writing-time');
+        const timeValueDisplay = document.getElementById('time-value');
+        const startWritingBtn = document.getElementById('start-writing-btn');
+        const writingTimerDisplay = document.getElementById('writing-timer');
+        const wordCountDisplay = document.getElementById('word-count');
+        const editorTextarea = document.getElementById('editor-textarea');
+        const dangerIndicator = document.getElementById('danger-indicator');
+        const completeStats = document.getElementById('complete-stats');
+        const savedTextPreview = document.getElementById('saved-text-preview');
+        const copyTextBtn = document.getElementById('copy-text-btn');
+        const newSessionBtn = document.getElementById('new-session-btn');
+        const writingAchievements = document.getElementById('writing-achievements');
+        const badgeCelebration = document.getElementById('badge-celebration');
+        const badgeCelebrationText = document.getElementById('badge-celebration-text');
+
+        // Celebration function
+        function showCelebration(text) {
+            badgeCelebrationText.textContent = text;
+            badgeCelebration.classList.remove('show');
+            void badgeCelebration.offsetWidth; // Force reflow
+            badgeCelebration.classList.add('show');
+            
+            setTimeout(() => {
+                badgeCelebration.classList.remove('show');
+            }, 1500);
+        }
+
+        // Add writing badge
+        function addWritingBadge(words) {
+            const badge = document.createElement('div');
+            badge.className = 'badge badge-glow';
+            badge.textContent = `${words} słów`;
+            writingAchievements.appendChild(badge);
+            showCelebration(`${words} słów!`);
+        }
+
+        // Check for new badges
+        function checkWritingBadges(wordCount) {
+            const badgeThreshold = 50;
+            const currentBadgeLevel = Math.floor(wordCount / badgeThreshold);
+            
+            if (currentBadgeLevel > lastBadgeCount) {
+                for (let i = lastBadgeCount + 1; i <= currentBadgeLevel; i++) {
+                    setTimeout(() => {
+                        addWritingBadge(i * badgeThreshold);
+                    }, (i - lastBadgeCount - 1) * 300);
+                }
+                lastBadgeCount = currentBadgeLevel;
+            }
+        }
+
+        // Slider functionality
+        function getMinutyForm(n) {
+            if (n === 1) return 'minuta';
+            if (n >= 2 && n <= 4) return 'minuty';
+            return 'minut';
+        }
+
+        function updateSlider() {
+            const value = parseInt(writingTimeInput.value);
+            const min = parseInt(writingTimeInput.min);
+            const max = parseInt(writingTimeInput.max);
+            const progress = ((value - min) / (max - min)) * 100;
+            writingTimeInput.style.setProperty('--slider-progress', progress + '%');
+            timeValueDisplay.textContent = value;
+            document.querySelector('.time-unit').textContent = getMinutyForm(value);
+        }
+
+        writingTimeInput.addEventListener('input', updateSlider);
+        updateSlider(); // Initialize
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function updateWordCount() {
+            const text = editorTextarea.value.trim();
+            const count = text ? text.split(/\s+/).length : 0;
+            wordCountDisplay.textContent = `${count} słów`;
+            checkWritingBadges(count);
+            return count;
+        }
+
+        function resetIdleTimer() {
+            idleTime = 0;
+            editorTextarea.style.setProperty('--idle-progress', '0');
+            editorTextarea.classList.remove('fading');
+            dangerIndicator.classList.remove('visible');
+        }
+
+        function checkIdle() {
+            idleTime += 0.05;
+            
+            // Gradual progress from 0 to 1 over IDLE_DELETE seconds
+            const progress = Math.min(idleTime / IDLE_DELETE, 1);
+            editorTextarea.style.setProperty('--idle-progress', progress.toString());
+            
+            if (progress > 0.5) {
+                editorTextarea.classList.add('fading');
+            }
+            
+            if (progress > 0.7) {
+                dangerIndicator.classList.add('visible');
+            }
+            
+            if (idleTime >= IDLE_DELETE) {
+                editorTextarea.value = '';
+                updateWordCount();
+                resetIdleTimer();
+            }
+        }
+
+        function startWriting() {
+            const minutes = parseInt(writingTimeInput.value) || 5;
+            writingTimeLeft = minutes * 60;
+            
+            // Reset badges
+            lastBadgeCount = 0;
+            writingAchievements.innerHTML = '';
+            
+            writingSetup.classList.add('hidden');
+            writingEditor.classList.add('active');
+            editorTextarea.value = '';
+            editorTextarea.focus();
+            updateWordCount();
+            resetIdleTimer();
+            
+            writingTimerDisplay.textContent = formatTime(writingTimeLeft);
+            
+            writingInterval = setInterval(() => {
+                writingTimeLeft--;
+                writingTimerDisplay.textContent = formatTime(writingTimeLeft);
+                
+                if (writingTimeLeft <= 0) {
+                    endWriting(true);
+                }
+            }, 1000);
+            
+            idleInterval = setInterval(checkIdle, 50);
+        }
+
+        function endWriting(completed) {
+            clearInterval(writingInterval);
+            clearInterval(idleInterval);
+            
+            const finalText = editorTextarea.value;
+            const totalWords = updateWordCount();
+            
+            writingEditor.classList.remove('active');
+            
+            setTimeout(() => {
+                writingComplete.classList.add('active');
+            }, 300);
+            
+            const minutes = parseInt(writingTimeInput.value) || 5;
+            completeStats.innerHTML = `
+                Słowo: <em>${currentWord}</em><br>
+                Czas: ${minutes} min · ${totalWords} słów
+            `;
+            savedTextPreview.textContent = finalText || '(brak tekstu)';
+        }
+
+        function resetWriting() {
+            writingComplete.classList.remove('active');
+            setTimeout(() => {
+                writingSetup.classList.remove('hidden');
+            }, 300);
+            resetIdleTimer();
+        }
+
+        startWritingBtn.addEventListener('click', startWriting);
+        newSessionBtn.addEventListener('click', resetWriting);
+        
+        copyTextBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(savedTextPreview.textContent);
+            copyTextBtn.querySelector('.btn-text').textContent = 'Skopiowano!';
+            setTimeout(() => {
+                copyTextBtn.querySelector('.btn-text').textContent = 'Kopiuj';
+            }, 2000);
+        });
+
+        editorTextarea.addEventListener('input', () => {
+            resetIdleTimer();
+            updateWordCount();
+        });
+
+        editorTextarea.addEventListener('keydown', resetIdleTimer);
+
+        // ========== RECORDING MODULE ==========
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingStartTime = null;
+        let recordingTimerInterval = null;
+        let recordings = [];
+        let audioStream = null;
+        let lastRecordingMinute = 0;
+
+        const micVisualizer = document.getElementById('mic-visualizer');
+        const recordingTimerDisplay = document.getElementById('recording-timer');
+        const recordBtn = document.getElementById('record-btn');
+        const recordingsList = document.getElementById('recordings-list');
+        const recordingAchievements = document.getElementById('recording-achievements');
+
+        // Add recording badge
+        function addRecordingBadge(minutes) {
+            const badge = document.createElement('div');
+            badge.className = 'badge badge-glow';
+            badge.textContent = `${minutes} min`;
+            recordingAchievements.appendChild(badge);
+            showCelebration(`${minutes} ${minutes === 1 ? 'minuta' : (minutes >= 2 && minutes <= 4 ? 'minuty' : 'minut')}!`);
+        }
+
+        // Check recording time for badges
+        function checkRecordingBadges() {
+            const elapsed = Date.now() - recordingStartTime;
+            const currentMinute = Math.floor(elapsed / 60000);
+            
+            if (currentMinute > lastRecordingMinute) {
+                for (let i = lastRecordingMinute + 1; i <= currentMinute; i++) {
+                    addRecordingBadge(i);
+                }
+                lastRecordingMinute = currentMinute;
+            }
+        }
+
+        function loadRecordings() {
+            try {
+                const saved = localStorage.getItem('workshopRecordings');
+                if (saved) {
+                    recordings = JSON.parse(saved);
+                    renderRecordings();
+                }
+            } catch (e) {
+                console.error('Błąd wczytywania nagrań:', e);
+                recordings = [];
+            }
+        }
+
+        function saveRecordings() {
+            try {
+                // Keep only last 10 recordings to avoid localStorage limits
+                const toSave = recordings.slice(0, 10);
+                localStorage.setItem('workshopRecordings', JSON.stringify(toSave));
+            } catch (e) {
+                console.error('Błąd zapisywania nagrań:', e);
+                alert('Nie można zapisać nagrania. Pamięć przeglądarki może być pełna.');
+            }
+        }
+
+        function renderRecordings() {
+            if (recordings.length === 0) {
+                recordingsList.innerHTML = '<p class="no-recordings">Brak nagrań</p>';
+                return;
+            }
+
+            recordingsList.innerHTML = recordings.map((rec, i) => `
+                <div class="recording-item">
+                    <div class="recording-info">
+                        <span class="recording-name">${rec.word || 'Nagranie'}</span>
+                        <span class="recording-date">${rec.date} · ${rec.duration}</span>
+                    </div>
+                    <div class="recording-actions">
+                        <button class="btn-tiny" onclick="playRecording(${i})" title="Odtwórz">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </button>
+                        <button class="btn-tiny" onclick="downloadRecording(${i})" title="Pobierz">
+                            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </button>
+                        <button class="btn-tiny" onclick="deleteRecording(${i})" title="Usuń">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.playRecording = function(index) {
+            try {
+                const audio = new Audio(recordings[index].data);
+                audio.play();
+            } catch (e) {
+                alert('Nie można odtworzyć nagrania.');
+            }
+        };
+
+        window.downloadRecording = function(index) {
+            try {
+                const rec = recordings[index];
+                const link = document.createElement('a');
+                link.href = rec.data;
+                link.download = `${rec.word || 'nagranie'}-${Date.now()}.webm`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                alert('Nie można pobrać nagrania.');
+            }
+        };
+
+        window.deleteRecording = function(index) {
+            recordings.splice(index, 1);
+            saveRecordings();
+            renderRecordings();
+        };
+
+        function formatRecordingTime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            if (audioStream) {
+                audioStream.getTracks().forEach(track => track.stop());
+                audioStream = null;
+            }
+            isRecording = false;
+            micVisualizer.classList.remove('recording');
+            recordBtn.querySelector('.btn-text').textContent = 'Nagraj';
+            clearInterval(recordingTimerInterval);
+        }
+
+        async function startRecording() {
+            try {
+                // Check if getUserMedia is available
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Twoja przeglądarka nie obsługuje nagrywania audio. Spróbuj otworzyć tę stronę w Chrome, Firefox lub Safari.');
+                    return;
+                }
+
+                audioStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    } 
+                });
+                
+                // Check supported MIME types
+                let mimeType = 'audio/webm';
+                if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                    mimeType = 'audio/webm;codecs=opus';
+                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    mimeType = 'audio/mp4';
+                } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+                    mimeType = 'audio/ogg';
+                }
+
+                mediaRecorder = new MediaRecorder(audioStream, { mimeType });
+                audioChunks = [];
+                recordingStartTime = Date.now();
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        audioChunks.push(e.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const duration = Date.now() - recordingStartTime;
+                    const blob = new Blob(audioChunks, { type: mimeType });
+                    const reader = new FileReader();
+                    
+                    reader.onloadend = () => {
+                        recordings.unshift({
+                            word: currentWord,
+                            data: reader.result,
+                            date: new Date().toLocaleDateString('pl-PL'),
+                            duration: formatRecordingTime(duration)
+                        });
+                        saveRecordings();
+                        renderRecordings();
+                    };
+                    
+                    reader.onerror = () => {
+                        console.error('Błąd odczytu nagrania');
+                    };
+                    
+                    reader.readAsDataURL(blob);
+                    
+                    if (audioStream) {
+                        audioStream.getTracks().forEach(track => track.stop());
+                        audioStream = null;
+                    }
+                };
+
+                mediaRecorder.onerror = (e) => {
+                    console.error('MediaRecorder error:', e);
+                    stopRecording();
+                    alert('Wystąpił błąd podczas nagrywania.');
+                };
+
+                mediaRecorder.start(1000); // Collect data every second
+                isRecording = true;
+                micVisualizer.classList.add('recording');
+                recordBtn.querySelector('.btn-text').textContent = 'Zatrzymaj';
+                
+                // Reset badges
+                lastRecordingMinute = 0;
+                recordingAchievements.innerHTML = '';
+                
+                recordingTimerInterval = setInterval(() => {
+                    recordingTimerDisplay.textContent = formatRecordingTime(Date.now() - recordingStartTime);
+                    checkRecordingBadges();
+                }, 100);
+
+            } catch (err) {
+                console.error('Recording error:', err);
+                
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    alert('Dostęp do mikrofonu został zablokowany. Kliknij ikonę kłódki w pasku adresu i zezwól na dostęp do mikrofonu.');
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    alert('Nie znaleziono mikrofonu. Upewnij się, że mikrofon jest podłączony.');
+                } else if (err.name === 'NotSupportedError') {
+                    alert('Nagrywanie audio nie jest obsługiwane w tym kontekście. Spróbuj otworzyć stronę bezpośrednio (nie w iframe).');
+                } else {
+                    alert('Nie można uzyskać dostępu do mikrofonu: ' + err.message);
+                }
+            }
+        }
+
+        async function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                await startRecording();
+            }
+        }
+
+        recordBtn.addEventListener('click', toggleRecording);
+        loadRecordings();
+    </script>
+</body>
+</html>
