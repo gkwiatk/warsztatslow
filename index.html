@@ -149,6 +149,60 @@
             letter-spacing: 0.1em;
         }
 
+        /* Intro info */
+        .intro-info {
+            max-width: 320px;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.5s forwards;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .intro-info.hidden {
+            opacity: 0 !important;
+            transform: translateY(-10px);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .intro-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .intro-text strong {
+            color: var(--accent);
+            font-weight: 400;
+        }
+
+        .intro-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            text-align: left;
+        }
+
+        .intro-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .intro-icon {
+            color: var(--accent);
+            opacity: 0.6;
+            font-size: 0.6rem;
+            margin-top: 0.2rem;
+        }
+
         /* Word display - always visible */
         .word-stage {
             position: relative;
@@ -622,109 +676,45 @@
             opacity: 1;
         }
 
-        /* Achievements / Badges */
-        .achievements {
+        /* Progress dots */
+        .progress-dots {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.6rem;
             flex-wrap: wrap;
             justify-content: center;
             margin-top: 1rem;
-            min-height: 40px;
+            min-height: 20px;
         }
 
-        .badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.4rem 0.8rem;
-            background: rgba(201, 168, 124, 0.08);
-            border: 1px solid rgba(201, 168, 124, 0.3);
-            color: var(--accent);
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.85rem;
-            font-style: italic;
-            border-radius: 20px;
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
             opacity: 0;
-            transform: scale(0.5) translateY(10px);
-            animation: badgeAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            box-shadow: 0 0 20px rgba(201, 168, 124, 0.15);
+            transform: scale(0);
+            animation: dotAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
-        .badge::before {
-            content: '✦';
-            margin-right: 0.4rem;
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
-
-        @keyframes badgeAppear {
+        @keyframes dotAppear {
             0% {
                 opacity: 0;
-                transform: scale(0.5) translateY(10px);
+                transform: scale(0);
             }
             50% {
-                transform: scale(1.1) translateY(-5px);
+                transform: scale(1.4);
             }
             100% {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: scale(1);
             }
         }
 
-        .badge-glow {
-            animation: badgeAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                       badgeGlow 2s ease-in-out 0.8s infinite;
-        }
-
-        @keyframes badgeGlow {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(201, 168, 124, 0.15);
-            }
-            50% {
-                box-shadow: 0 0 30px rgba(201, 168, 124, 0.3);
-            }
-        }
-
-        /* Badge celebration overlay */
-        .badge-celebration {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0;
-        }
-
-        .badge-celebration.show {
-            animation: celebrationPulse 1.5s ease-out forwards;
-        }
-
-        .badge-celebration-inner {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
-            font-style: italic;
-            color: var(--accent);
-            text-shadow: 0 0 40px var(--accent-glow);
-        }
-
-        @keyframes celebrationPulse {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.5);
-            }
-            20% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-            80% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(1.05);
-            }
+        .progress-dot:nth-child(5n) {
+            width: 10px;
+            height: 10px;
+            box-shadow: 0 0 16px var(--accent-glow);
         }
 
         .writing-complete {
@@ -954,6 +944,25 @@
             <h1 class="title">Słów</h1>
         </header>
 
+        <!-- Info section - visible before first word -->
+        <div class="intro-info" id="intro-info">
+            <p class="intro-text">Wylosuj słowo, a następnie <strong>pisz</strong> lub <strong>nagrywaj</strong> swoje myśli.</p>
+            <div class="intro-features">
+                <div class="intro-feature">
+                    <span class="intro-icon">✦</span>
+                    <span>Pisanie na czas z motywacją do ciągłego pisania</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="intro-icon">✦</span>
+                    <span>Nagrywanie głosu z możliwością pobrania</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="intro-icon">✦</span>
+                    <span>Wszystko zostaje w Twojej przeglądarce — nic nie jest wysyłane</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Word always visible -->
         <div class="word-stage" id="word-stage">
             <div class="word-container">
@@ -965,7 +974,6 @@
                     <div class="frame-corner br"></div>
                 </div>
                 <div class="particles" id="particles"></div>
-                <p class="placeholder" id="placeholder">dotknij, by odkryć</p>
                 <div class="word">
                     <span class="word-inner" id="word-inner"></span>
                 </div>
@@ -1036,7 +1044,7 @@
                     <textarea class="editor-textarea" id="editor-textarea" placeholder="Zacznij pisać..."></textarea>
                     <div class="danger-indicator" id="danger-indicator">Pisz! Tekst zaraz zniknie...</div>
                 </div>
-                <div class="achievements" id="writing-achievements"></div>
+                <div class="progress-dots" id="writing-dots"></div>
             </div>
 
             <div class="writing-complete" id="writing-complete">
@@ -1068,7 +1076,7 @@
                 </svg>
             </div>
             <div class="recording-timer" id="recording-timer">00:00</div>
-            <div class="achievements" id="recording-achievements"></div>
+            <div class="progress-dots" id="recording-dots"></div>
             <div class="mode-buttons">
                 <button class="btn btn-danger" id="record-btn">
                     <span class="btn-text">Nagraj</span>
@@ -1087,11 +1095,6 @@
         </div>
     </div>
 
-    <!-- Badge Celebration Overlay -->
-    <div class="badge-celebration" id="badge-celebration">
-        <div class="badge-celebration-inner" id="badge-celebration-text"></div>
-    </div>
-
     <script>
         // ========== STATE ==========
         let currentWord = '';
@@ -1106,7 +1109,7 @@
         const wordInner = document.getElementById('word-inner');
         const wordGlow = document.getElementById('word-glow');
         const frame = document.getElementById('frame');
-        const placeholder = document.getElementById('placeholder');
+        const introInfo = document.getElementById('intro-info');
         const particles = document.getElementById('particles');
         const controls = document.getElementById('controls');
         const actionButtons = document.getElementById('action-buttons');
@@ -1195,7 +1198,11 @@
                 wordInner.classList.remove('hiding');
             }
 
-            placeholder.classList.add('hidden');
+            // Hide intro info after first word
+            if (introInfo && !introInfo.classList.contains('hidden')) {
+                introInfo.classList.add('hidden');
+            }
+            
             currentWord = getRandomWord();
             drawnWords.add(currentWord);
             wordInner.textContent = currentWord;
@@ -1307,43 +1314,27 @@
         const savedTextPreview = document.getElementById('saved-text-preview');
         const copyTextBtn = document.getElementById('copy-text-btn');
         const newSessionBtn = document.getElementById('new-session-btn');
-        const writingAchievements = document.getElementById('writing-achievements');
-        const badgeCelebration = document.getElementById('badge-celebration');
-        const badgeCelebrationText = document.getElementById('badge-celebration-text');
+        const writingDots = document.getElementById('writing-dots');
 
-        // Celebration function
-        function showCelebration(text) {
-            badgeCelebrationText.textContent = text;
-            badgeCelebration.classList.remove('show');
-            void badgeCelebration.offsetWidth; // Force reflow
-            badgeCelebration.classList.add('show');
-            
-            setTimeout(() => {
-                badgeCelebration.classList.remove('show');
-            }, 1500);
+        // Add writing dot
+        function addWritingDot() {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot';
+            writingDots.appendChild(dot);
         }
 
-        // Add writing badge
-        function addWritingBadge(words) {
-            const badge = document.createElement('div');
-            badge.className = 'badge badge-glow';
-            badge.textContent = `${words} słów`;
-            writingAchievements.appendChild(badge);
-            showCelebration(`${words} słów!`);
-        }
-
-        // Check for new badges
-        function checkWritingBadges(wordCount) {
-            const badgeThreshold = 50;
-            const currentBadgeLevel = Math.floor(wordCount / badgeThreshold);
+        // Check for new dots
+        function checkWritingDots(wordCount) {
+            const dotThreshold = 50;
+            const currentDotLevel = Math.floor(wordCount / dotThreshold);
             
-            if (currentBadgeLevel > lastBadgeCount) {
-                for (let i = lastBadgeCount + 1; i <= currentBadgeLevel; i++) {
+            if (currentDotLevel > lastBadgeCount) {
+                for (let i = lastBadgeCount + 1; i <= currentDotLevel; i++) {
                     setTimeout(() => {
-                        addWritingBadge(i * badgeThreshold);
-                    }, (i - lastBadgeCount - 1) * 300);
+                        addWritingDot();
+                    }, (i - lastBadgeCount - 1) * 150);
                 }
-                lastBadgeCount = currentBadgeLevel;
+                lastBadgeCount = currentDotLevel;
             }
         }
 
@@ -1377,7 +1368,7 @@
             const text = editorTextarea.value.trim();
             const count = text ? text.split(/\s+/).length : 0;
             wordCountDisplay.textContent = `${count} słów`;
-            checkWritingBadges(count);
+            checkWritingDots(count);
             return count;
         }
 
@@ -1414,9 +1405,9 @@
             const minutes = parseInt(writingTimeInput.value) || 5;
             writingTimeLeft = minutes * 60;
             
-            // Reset badges
+            // Reset dots
             lastBadgeCount = 0;
-            writingAchievements.innerHTML = '';
+            writingDots.innerHTML = '';
             
             writingSetup.classList.add('hidden');
             writingEditor.classList.add('active');
@@ -1500,25 +1491,23 @@
         const recordingTimerDisplay = document.getElementById('recording-timer');
         const recordBtn = document.getElementById('record-btn');
         const recordingsList = document.getElementById('recordings-list');
-        const recordingAchievements = document.getElementById('recording-achievements');
+        const recordingDots = document.getElementById('recording-dots');
 
-        // Add recording badge
-        function addRecordingBadge(minutes) {
-            const badge = document.createElement('div');
-            badge.className = 'badge badge-glow';
-            badge.textContent = `${minutes} min`;
-            recordingAchievements.appendChild(badge);
-            showCelebration(`${minutes} ${minutes === 1 ? 'minuta' : (minutes >= 2 && minutes <= 4 ? 'minuty' : 'minut')}!`);
+        // Add recording dot
+        function addRecordingDot() {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot';
+            recordingDots.appendChild(dot);
         }
 
-        // Check recording time for badges
-        function checkRecordingBadges() {
+        // Check recording time for dots
+        function checkRecordingDots() {
             const elapsed = Date.now() - recordingStartTime;
             const currentMinute = Math.floor(elapsed / 60000);
             
             if (currentMinute > lastRecordingMinute) {
                 for (let i = lastRecordingMinute + 1; i <= currentMinute; i++) {
-                    addRecordingBadge(i);
+                    addRecordingDot();
                 }
                 lastRecordingMinute = currentMinute;
             }
@@ -1699,13 +1688,13 @@
                 micVisualizer.classList.add('recording');
                 recordBtn.querySelector('.btn-text').textContent = 'Zatrzymaj';
                 
-                // Reset badges
+                // Reset dots
                 lastRecordingMinute = 0;
-                recordingAchievements.innerHTML = '';
+                recordingDots.innerHTML = '';
                 
                 recordingTimerInterval = setInterval(() => {
                     recordingTimerDisplay.textContent = formatRecordingTime(Date.now() - recordingStartTime);
-                    checkRecordingBadges();
+                    checkRecordingDots();
                 }, 100);
 
             } catch (err) {
