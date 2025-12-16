@@ -147,6 +147,12 @@
             font-style: italic;
             color: var(--accent);
             letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .title:hover {
+            opacity: 0.8;
         }
 
         .done-counter {
@@ -318,6 +324,81 @@
             color: var(--text-muted);
             font-style: italic;
             font-size: 0.85rem;
+        }
+
+        .tab-count {
+            font-size: 0.6rem;
+            opacity: 0.6;
+        }
+
+        .all-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .all-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .all-item-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .all-item-text.story {
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .all-item.done .all-item-text {
+            color: var(--accent);
+        }
+
+        .all-item.done .all-item-text::after {
+            content: ' ✓';
+            opacity: 0.8;
+        }
+
+        .all-item-toggle {
+            background: none;
+            border: 1px solid rgba(201, 168, 124, 0.2);
+            color: var(--text-muted);
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+        }
+
+        .all-item-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .all-item.done .all-item-toggle {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .all-item.done .all-item-toggle:hover {
+            opacity: 1;
+        }
+
+        .all-item.done .all-item-text::after {
+            display: none;
         }
 
         /* Mode toggle */
@@ -1309,6 +1390,22 @@
             </div>
         </div>
 
+        <!-- All items modal -->
+        <div class="done-modal" id="all-items-modal">
+            <div class="done-modal-content" style="max-height: 80vh;">
+                <div class="done-modal-header">
+                    <h3 class="done-modal-title">Wszystkie hasła</h3>
+                    <button class="done-modal-close" id="all-items-modal-close">×</button>
+                </div>
+                <div class="done-modal-tabs">
+                    <button class="done-modal-tab active" data-tab="all-words">Słowa <span class="tab-count" id="words-count"></span></button>
+                    <button class="done-modal-tab" data-tab="all-stories">Historie <span class="tab-count" id="stories-count"></span></button>
+                </div>
+                <div class="done-modal-list" id="all-words-list"></div>
+                <div class="done-modal-list" id="all-stories-list" style="display: none;"></div>
+            </div>
+        </div>
+
         <!-- Mode toggle -->
         <div class="mode-toggle" id="mode-toggle">
             <button class="mode-tab active" id="mode-words" data-mode="words">Słowa</button>
@@ -1549,6 +1646,7 @@
 
         // Story starters
         const storyStarters = [
+            // Oryginalne
             'Kiedy otworzyła drzwi, zobaczyła coś, czego się nie spodziewała.',
             'List przyszedł dokładnie dziesięć lat po jej zniknięciu.',
             'Zegar na wieży wybił północ, a miasto zamarło.',
@@ -1568,7 +1666,38 @@
             'Muzyka dobiegała zza zamkniętych drzwi.',
             'Spotkali się przypadkiem po piętnastu latach.',
             'W ogrodzie wyrósł kwiat, jakiego nikt wcześniej nie widział.',
-            'Znalazł pamiętnik w murze starego domu.'
+            'Znalazł pamiętnik w murze starego domu.',
+            // Nowe
+            'Znalazła swoje dziecięce zdjęcie w antykwariacie, z datą sprzed stu lat.',
+            'Tego dnia postanowiła, że strach nie będzie już podejmował za nią decyzji.',
+            'Pierwszy krok był najtrudniejszy, więc zrobiła go boso.',
+            'W tej rodzinie kobiety płakały tylko z radości.',
+            'Od pokoleń kobiety w jej rodzinie rodziły się z mapą na dłoni, prowadzącą do miejsca, gdzie będą szczęśliwe.',
+            'Stary dąb zrzucał liście zawsze, gdy w rodzinie ktoś zapominał o swoich korzeniach.',
+            'Od tygodnia słyszała w rozmowach przypadkowych przechodniów to samo zdanie.',
+            'Miała sześćdziesiąt lat, kiedy pierwszy raz w życiu powiedziała to głośno.',
+            'Obudziła się z przekonaniem, że ta rekordowo długa zima wreszcie się skończyła.',
+            'Wyrzuciła listę rzeczy, które „powinna" zrobić, i napisała listę rzeczy, które ją zachwycają.',
+            'Przestała czekać na pozwolenie i sama sobie je wypisała.',
+            'Babcia twierdziła, że herbata parzona podczas burzy smakuje wspomnieniami.',
+            'Do każdej blizny opowiadała historię przetrwania, nie porażki.',
+            'Jej dziadek miał kolekcję zepsutych zegarów, w której każdy wskazywał inną godzinę.',
+            'Miał 80 lat i dla niej poszedł na pierwszą w życiu lekcję tańca.',
+            'Pola zaatakowała plaga najpiękniejszych motyli, jakie kiedykolwiek widział świat.',
+            'Pierwszą decyzją po powrocie do rodzinnego domu było wynajęcie buldożera.',
+            'W skrzynce pocztowej znalazła list od siebie samej, którego wysłania nie pamiętała.',
+            'W dniu jego pogrzebu wszystkie ptaki w miasteczku zamilkły.',
+            'Kot wrócił po siedmiu latach nieobecności.',
+            'Znalazła w kieszeni płaszcza bilet na pociąg, który odjeżdża jutro o świcie.',
+            'Nagle babcia zaczęła mówić w języku, którego nikt w rodzinie nie znał.',
+            'Na strychu odkryła walizkę spakowaną na wyjazd, który nigdy się nie odbył.',
+            'Po śmierci dziadka okazało się, że przez pięćdziesiąt lat codziennie pisał wiersz dla kogoś innego.',
+            'Tego dnia każdy człowiek na Ziemi stracił jeden zmysł.',
+            'Okazało się, że prawie wszyscy mieszkańcy tego kraju byli kosmitami.',
+            'Kiedy pierwszy raz zaprezentowano to urządzenie, nikt nie podejrzewał, że tak bardzo zmieni ono losy ludzkości.',
+            'To chyba piosenka o mnie, pomyślała, słuchając najnowszej listy przebojów.',
+            'Być może to było o jeden krok za daleko, ale było już za późno.',
+            'Do jej mieszkania wleciał bardzo dziwny smok.'
         ];
 
         const drawnWords = new Set();
@@ -1821,6 +1950,21 @@
 
         function openDoneModal() {
             renderDoneLists();
+            
+            // Show appropriate tab based on current mode
+            const tabs = document.querySelectorAll('#done-modal .done-modal-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (currentAppMode === 'stories') {
+                tabs[1].classList.add('active');
+                doneWordsList.style.display = 'none';
+                doneStoriesList.style.display = 'block';
+            } else {
+                tabs[0].classList.add('active');
+                doneWordsList.style.display = 'block';
+                doneStoriesList.style.display = 'none';
+            }
+            
             doneModal.classList.add('active');
         }
 
@@ -1883,10 +2027,10 @@
             }
         };
 
-        // Modal tabs
-        document.querySelectorAll('.done-modal-tab').forEach(tab => {
+        // Done Modal tabs
+        document.querySelectorAll('#done-modal .done-modal-tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                document.querySelectorAll('.done-modal-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('#done-modal .done-modal-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
                 if (tab.dataset.tab === 'words') {
@@ -1903,6 +2047,195 @@
         doneModalClose.addEventListener('click', closeDoneModal);
         doneModal.addEventListener('click', (e) => {
             if (e.target === doneModal) closeDoneModal();
+        });
+
+        // ========== ALL ITEMS MODAL ==========
+        const allItemsModal = document.getElementById('all-items-modal');
+        const allItemsModalClose = document.getElementById('all-items-modal-close');
+        const allWordsList = document.getElementById('all-words-list');
+        const allStoriesList = document.getElementById('all-stories-list');
+
+        function openAllItemsModal() {
+            renderAllItemsLists();
+            
+            // Show appropriate tab based on current mode
+            const tabs = document.querySelectorAll('#all-items-modal .done-modal-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (currentAppMode === 'stories') {
+                tabs[1].classList.add('active');
+                allWordsList.style.display = 'none';
+                allStoriesList.style.display = 'block';
+            } else {
+                tabs[0].classList.add('active');
+                allWordsList.style.display = 'block';
+                allStoriesList.style.display = 'none';
+            }
+            
+            allItemsModal.classList.add('active');
+        }
+
+        function closeAllItemsModal() {
+            allItemsModal.classList.remove('active');
+        }
+
+        function renderAllItemsLists() {
+            // Update counts
+            document.getElementById('words-count').textContent = `(${words.length})`;
+            document.getElementById('stories-count').textContent = `(${storyStarters.length})`;
+            
+            // Render all words
+            allWordsList.innerHTML = words.map((word, i) => `
+                <div class="all-item ${doneWords.has(word) ? 'done' : ''}">
+                    <span class="all-item-text" onclick="selectWord('${word}')">${word}</span>
+                    <button class="all-item-toggle" onclick="toggleWordDone('${word}')" title="${doneWords.has(word) ? 'Usuń z załatwionych' : 'Oznacz jako załatwione'}">
+                        ${doneWords.has(word) ? '×' : '✓'}
+                    </button>
+                </div>
+            `).join('');
+            
+            // Render all stories
+            allStoriesList.innerHTML = storyStarters.map((story, i) => `
+                <div class="all-item ${doneStories.has(story) ? 'done' : ''}">
+                    <span class="all-item-text story" onclick="selectStory(${i})">${story}</span>
+                    <button class="all-item-toggle" onclick="toggleStoryDone(${i})" title="${doneStories.has(story) ? 'Usuń z załatwionych' : 'Oznacz jako załatwione'}">
+                        ${doneStories.has(story) ? '×' : '✓'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.toggleWordDone = function(word) {
+            if (doneWords.has(word)) {
+                doneWords.delete(word);
+            } else {
+                doneWords.add(word);
+            }
+            saveSavedWritings();
+            renderAllItemsLists();
+            updateDoneCounter();
+            updateDoneButtonState();
+            renderSavedWritings();
+            
+            if (currentWord === word) {
+                wordInner.classList.toggle('done', doneWords.has(word));
+            }
+        };
+
+        window.toggleStoryDone = function(index) {
+            const story = storyStarters[index];
+            if (doneStories.has(story)) {
+                doneStories.delete(story);
+            } else {
+                doneStories.add(story);
+            }
+            saveSavedWritings();
+            renderAllItemsLists();
+            updateDoneCounter();
+            updateDoneButtonState();
+            
+            if (currentWord === story) {
+                wordInner.classList.toggle('done', doneStories.has(story));
+            }
+        };
+
+        window.selectWord = function(word) {
+            closeAllItemsModal();
+            
+            // Switch to words mode if needed
+            if (currentAppMode !== 'words') {
+                switchAppMode('words');
+            }
+            
+            // Set the word
+            currentWord = word;
+            drawnWords.add(word);
+            
+            // Hide intro
+            if (introInfo && !introInfo.classList.contains('hidden')) {
+                introInfo.classList.add('hidden');
+            }
+            
+            // Update display
+            wordInner.textContent = currentWord;
+            wordInner.classList.remove('hiding', 'story-mode');
+            if (doneWords.has(currentWord)) {
+                wordInner.classList.add('done');
+            } else {
+                wordInner.classList.remove('done');
+            }
+            
+            setTimeout(() => {
+                createParticles();
+                wordInner.classList.add('revealed');
+                wordGlow.classList.add('active');
+                actionButtons.style.display = 'flex';
+                updateDoneButtonState();
+                frame.classList.add('visible');
+            }, 100);
+        };
+
+        window.selectStory = function(index) {
+            closeAllItemsModal();
+            
+            // Switch to stories mode if needed
+            if (currentAppMode !== 'stories') {
+                switchAppMode('stories');
+            }
+            
+            const story = storyStarters[index];
+            currentWord = story;
+            drawnStories.add(story);
+            
+            // Hide intro
+            if (introInfo && !introInfo.classList.contains('hidden')) {
+                introInfo.classList.add('hidden');
+            }
+            
+            // Update display
+            wordInner.textContent = currentWord;
+            wordInner.classList.remove('hiding');
+            wordInner.classList.add('story-mode');
+            wordStage.classList.add('story-active');
+            speakBtn.style.display = 'none';
+            
+            if (doneStories.has(currentWord)) {
+                wordInner.classList.add('done');
+            } else {
+                wordInner.classList.remove('done');
+            }
+            
+            setTimeout(() => {
+                createParticles();
+                wordInner.classList.add('revealed');
+                wordGlow.classList.add('active');
+                actionButtons.style.display = 'flex';
+                markDoneMainBtn.style.display = '';
+                updateDoneButtonState();
+                frame.classList.add('visible');
+            }, 100);
+        };
+
+        // All items modal tabs
+        document.querySelectorAll('#all-items-modal .done-modal-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('#all-items-modal .done-modal-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'all-words') {
+                    allWordsList.style.display = 'block';
+                    allStoriesList.style.display = 'none';
+                } else {
+                    allWordsList.style.display = 'none';
+                    allStoriesList.style.display = 'block';
+                }
+            });
+        });
+
+        document.querySelector('.title').addEventListener('click', openAllItemsModal);
+        allItemsModalClose.addEventListener('click', closeAllItemsModal);
+        allItemsModal.addEventListener('click', (e) => {
+            if (e.target === allItemsModal) closeAllItemsModal();
         });
 
         function createParticles() {
