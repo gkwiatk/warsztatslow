@@ -149,20 +149,238 @@
             letter-spacing: 0.1em;
         }
 
+        .done-counter {
+            font-size: 0.65rem;
+            font-weight: 200;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            cursor: pointer;
+        }
+
+        .done-counter:hover {
+            color: var(--accent);
+        }
+
+        .done-counter.visible {
+            opacity: 1;
+        }
+
+        /* Done modal */
+        .done-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 15, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .done-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .done-modal-content {
+            background: rgba(20, 20, 25, 0.98);
+            border: 1px solid rgba(201, 168, 124, 0.2);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .done-modal.active .done-modal-content {
+            transform: translateY(0);
+        }
+
+        .done-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(201, 168, 124, 0.1);
+        }
+
+        .done-modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .done-modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .done-modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .done-modal-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(201, 168, 124, 0.1);
+        }
+
+        .done-modal-tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .done-modal-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .done-modal-tab.active {
+            color: var(--accent);
+            background: rgba(201, 168, 124, 0.1);
+        }
+
+        .done-modal-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .done-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .done-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .done-item-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            flex: 1;
+            margin-right: 0.5rem;
+        }
+
+        .done-item-text.story {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .done-item-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            line-height: 1;
+            transition: color 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .done-item-remove:hover {
+            color: var(--danger);
+            opacity: 1;
+        }
+
+        .done-empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        /* Mode toggle */
+        .mode-toggle {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            padding: 0.25rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201, 168, 124, 0.15);
+            border-radius: 4px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.4s forwards;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .mode-toggle.hidden {
+            opacity: 0 !important;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+
+        .mode-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .mode-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .mode-tab.active {
+            background: rgba(201, 168, 124, 0.15);
+            color: var(--accent);
+        }
+
         /* Intro info */
         .intro-info {
             max-width: 320px;
             margin-bottom: 2rem;
             opacity: 0;
             animation: fadeIn 1s ease-out 0.5s forwards;
-            transition: opacity 1s ease, transform 1s ease;
+            transition: opacity 0.8s ease, transform 0.8s ease, max-height 0.8s ease;
+            max-height: 300px;
+            overflow: hidden;
         }
 
         .intro-info.hidden {
             opacity: 0 !important;
             transform: translateY(-10px);
             pointer-events: none;
-            position: absolute;
+            max-height: 0;
+            margin-bottom: 0;
         }
 
         .intro-text {
@@ -265,7 +483,9 @@
             opacity: 0;
             transform: translateY(20px);
             filter: blur(8px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .word-inner.revealed {
@@ -278,6 +498,18 @@
             opacity: 0;
             transform: translateY(-20px) scale(0.95);
             filter: blur(8px);
+        }
+
+        .word-inner.story-mode {
+            font-size: clamp(1rem, 4vw, 1.4rem);
+            line-height: 1.6;
+            max-width: 90vw;
+            text-align: center;
+            text-transform: none;
+        }
+
+        .word-stage.story-active {
+            min-height: 180px;
         }
 
         .word-glow {
@@ -325,6 +557,8 @@
         /* Controls area */
         .controls {
             width: 100%;
+            opacity: 1;
+            transform: translateY(0);
             transition: opacity 1s ease, transform 1s ease;
         }
 
@@ -423,6 +657,33 @@
             border-color: var(--accent);
             background: rgba(201, 168, 124, 0.15);
             box-shadow: 0 0 20px rgba(201, 168, 124, 0.2);
+        }
+
+        .btn.active.done-active {
+            border-color: rgba(201, 168, 124, 0.8);
+            background: rgba(201, 168, 124, 0.2);
+            color: var(--accent);
+            box-shadow: 0 0 20px rgba(201, 168, 124, 0.3);
+            opacity: 1;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled.done-active {
+            opacity: 1;
+            cursor: default;
+        }
+
+        .btn:disabled:hover {
+            border-color: rgba(201, 168, 124, 0.3);
+            box-shadow: none;
+        }
+
+        .btn:disabled::before {
+            display: none;
         }
 
         .btn-danger {
@@ -800,6 +1061,16 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
+        .mic-visualizer.paused {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+            animation: none;
+        }
+
+        .mic-visualizer.paused svg {
+            stroke: var(--accent);
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -916,12 +1187,89 @@
             text-align: center;
         }
 
+        /* Saved writings */
+        .saved-writings {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(201, 168, 124, 0.1);
+            display: none;
+        }
+
+        .saved-writings.has-items {
+            display: block;
+        }
+
+        .writing-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .writing-item:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(201, 168, 124, 0.2);
+        }
+
+        .writing-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .writing-item-word {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .writing-item-word.done::after {
+            content: ' ✓';
+            color: var(--accent);
+            opacity: 0.8;
+        }
+
+        .writing-item-meta {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+        }
+
+        .writing-item-preview {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-height: 3em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .writing-item-actions {
+            display: flex;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Done word indicator on main display */
+        .word-inner.done::after {
+            content: ' ✓';
+            font-size: 0.6em;
+            color: var(--accent);
+            opacity: 0.8;
+            vertical-align: super;
+        }
+
         /* Utilities */
         @keyframes fadeIn {
             to { opacity: 1; }
         }
-
-        .hidden { display: none !important; }
 
         @supports (padding: env(safe-area-inset-bottom)) {
             .container {
@@ -942,7 +1290,30 @@
         <header class="header" id="header">
             <p class="subtitle">warsztat</p>
             <h1 class="title">Słów</h1>
+            <p class="done-counter" id="done-counter"></p>
         </header>
+
+        <!-- Done items modal -->
+        <div class="done-modal" id="done-modal">
+            <div class="done-modal-content">
+                <div class="done-modal-header">
+                    <h3 class="done-modal-title">Załatwione</h3>
+                    <button class="done-modal-close" id="done-modal-close">×</button>
+                </div>
+                <div class="done-modal-tabs">
+                    <button class="done-modal-tab active" data-tab="words">Słowa</button>
+                    <button class="done-modal-tab" data-tab="stories">Historie</button>
+                </div>
+                <div class="done-modal-list" id="done-words-list"></div>
+                <div class="done-modal-list" id="done-stories-list" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Mode toggle -->
+        <div class="mode-toggle" id="mode-toggle">
+            <button class="mode-tab active" id="mode-words" data-mode="words">Słowa</button>
+            <button class="mode-tab" id="mode-stories" data-mode="stories">Historie</button>
+        </div>
 
         <!-- Info section - visible before first word -->
         <div class="intro-info" id="intro-info">
@@ -1004,6 +1375,13 @@
                 <button class="btn" id="recordModeBtn">
                     <span class="btn-text">Nagraj</span>
                 </button>
+                <button class="btn btn-icon" id="markDoneMainBtn" title="Oznacz jako załatwione">
+                    <span class="btn-text">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </span>
+                </button>
             </div>
         </div>
 
@@ -1055,6 +1433,14 @@
                     <button class="btn btn-small" id="copy-text-btn">
                         <span class="btn-text">Kopiuj</span>
                     </button>
+                    <button class="btn btn-small" id="save-text-btn">
+                        <span class="btn-text">Zapisz</span>
+                    </button>
+                    <button class="btn btn-small" id="mark-done-btn">
+                        <span class="btn-text">✓ Załatwione</span>
+                    </button>
+                </div>
+                <div class="complete-buttons" style="margin-top: 0.75rem;">
                     <button class="btn btn-small" id="new-session-btn">
                         <span class="btn-text">Nowa sesja</span>
                     </button>
@@ -1062,6 +1448,12 @@
                         <span class="btn-text">Powrót</span>
                     </button>
                 </div>
+            </div>
+
+            <!-- Saved writings list -->
+            <div class="saved-writings" id="saved-writings">
+                <p class="recordings-header">Zapisane teksty</p>
+                <div class="recordings-list" id="writings-list"></div>
             </div>
         </div>
 
@@ -1080,6 +1472,14 @@
             <div class="mode-buttons">
                 <button class="btn btn-danger" id="record-btn">
                     <span class="btn-text">Nagraj</span>
+                </button>
+                <button class="btn btn-icon" id="pause-btn" style="display: none;" title="Pauza">
+                    <span class="btn-text">
+                        <svg viewBox="0 0 24 24" id="pause-icon">
+                            <rect x="6" y="4" width="4" height="16"/>
+                            <rect x="14" y="4" width="4" height="16"/>
+                        </svg>
+                    </span>
                 </button>
                 <button class="btn btn-small" id="back-from-record-btn">
                     <span class="btn-text">Powrót</span>
@@ -1101,6 +1501,10 @@
         let autoSpeak = false;
         let isAnimating = false;
         let currentMode = 'word'; // word, writing, recording
+        let savedWritings = [];
+        let doneWords = new Set();
+        let doneStories = new Set();
+        let currentWritingText = ''; // Store current text for saving
 
         // ========== ELEMENTS ==========
         const bgLayer = document.getElementById('bg-layer');
@@ -1117,6 +1521,7 @@
         const speakBtn = document.getElementById('speakBtn');
         const writeBtn = document.getElementById('writeBtn');
         const recordModeBtn = document.getElementById('recordModeBtn');
+        const markDoneMainBtn = document.getElementById('markDoneMainBtn');
 
         // ========== WORDS ==========
         const words = [
@@ -1142,16 +1547,363 @@
             'poszukiwanie', 'odkrycie', 'utrata', 'powrót', 'wędrówka'
         ];
 
+        // Story starters
+        const storyStarters = [
+            'Kiedy otworzyła drzwi, zobaczyła coś, czego się nie spodziewała.',
+            'List przyszedł dokładnie dziesięć lat po jej zniknięciu.',
+            'Zegar na wieży wybił północ, a miasto zamarło.',
+            'Nie pamiętał swojego imienia, ale pamiętał jej twarz.',
+            'Ostatni pociąg odjechał godzinę temu.',
+            'W lustrze odbijał się ktoś zupełnie inny.',
+            'Znalazła klucz w kieszeni płaszcza, którego nigdy nie nosiła.',
+            'Deszcz padał nieprzerwanie od czterdziestu dni.',
+            'Telefon zadzwonił o trzeciej w nocy.',
+            'Na stole leżała kartka z jednym słowem.',
+            'Wróciła do domu po dwudziestu latach nieobecności.',
+            'Światło w latarni morskiej zgasło po raz pierwszy od stu lat.',
+            'Ostatnie słowa babci brzmiały zagadkowo.',
+            'Obudziła się w pokoju, którego nie rozpoznawała.',
+            'Fotografia wypadła ze starej książki.',
+            'Nikt nie wiedział, skąd wzięło się dziecko na progu.',
+            'Muzyka dobiegała zza zamkniętych drzwi.',
+            'Spotkali się przypadkiem po piętnastu latach.',
+            'W ogrodzie wyrósł kwiat, jakiego nikt wcześniej nie widział.',
+            'Znalazł pamiętnik w murze starego domu.'
+        ];
+
         const drawnWords = new Set();
+        const drawnStories = new Set();
+        let currentAppMode = 'words'; // 'words' or 'stories'
 
         function getRandomWord() {
-            const available = words.filter(w => !drawnWords.has(w));
+            // Filter out both drawn and done words
+            const available = words.filter(w => !drawnWords.has(w) && !doneWords.has(w));
             if (available.length === 0) {
+                // If all words are done or drawn, only reset drawn (not done)
                 drawnWords.clear();
-                return words[Math.floor(Math.random() * words.length)];
+                const stillAvailable = words.filter(w => !doneWords.has(w));
+                if (stillAvailable.length === 0) {
+                    // All words are done - show message
+                    return null;
+                }
+                return stillAvailable[Math.floor(Math.random() * stillAvailable.length)];
             }
             return available[Math.floor(Math.random() * available.length)];
         }
+
+        function getRandomStory() {
+            const available = storyStarters.filter(s => !drawnStories.has(s) && !doneStories.has(s));
+            if (available.length === 0) {
+                drawnStories.clear();
+                const stillAvailable = storyStarters.filter(s => !doneStories.has(s));
+                if (stillAvailable.length === 0) {
+                    return null; // All stories done
+                }
+                return stillAvailable[Math.floor(Math.random() * stillAvailable.length)];
+            }
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        // ========== SAVED WRITINGS & DONE WORDS ==========
+        function loadSavedWritings() {
+            try {
+                const saved = localStorage.getItem('workshopWritings');
+                if (saved) {
+                    savedWritings = JSON.parse(saved);
+                }
+                const done = localStorage.getItem('workshopDoneWords');
+                if (done) {
+                    doneWords = new Set(JSON.parse(done));
+                }
+                const doneS = localStorage.getItem('workshopDoneStories');
+                if (doneS) {
+                    doneStories = new Set(JSON.parse(doneS));
+                }
+                renderSavedWritings();
+                updateDoneCounter();
+            } catch (e) {
+                console.error('Error loading writings:', e);
+            }
+        }
+
+        function updateDoneCounter() {
+            const counter = document.getElementById('done-counter');
+            if (!counter) return;
+            
+            if (currentAppMode === 'stories') {
+                const count = doneStories.size;
+                const total = storyStarters.length;
+                
+                if (count > 0) {
+                    counter.textContent = `${count} / ${total} ✓`;
+                    counter.classList.add('visible');
+                } else {
+                    counter.classList.remove('visible');
+                }
+            } else {
+                const count = doneWords.size;
+                const total = words.length;
+                
+                if (count > 0) {
+                    counter.textContent = `${count} / ${total} ✓`;
+                    counter.classList.add('visible');
+                } else {
+                    counter.classList.remove('visible');
+                }
+            }
+        }
+
+        function saveSavedWritings() {
+            try {
+                localStorage.setItem('workshopWritings', JSON.stringify(savedWritings));
+                localStorage.setItem('workshopDoneWords', JSON.stringify([...doneWords]));
+                localStorage.setItem('workshopDoneStories', JSON.stringify([...doneStories]));
+            } catch (e) {
+                console.error('Error saving writings:', e);
+            }
+        }
+
+        function renderSavedWritings() {
+            const list = document.getElementById('writings-list');
+            const container = document.getElementById('saved-writings');
+            
+            if (!list || !container) return;
+            
+            if (savedWritings.length === 0) {
+                container.classList.remove('has-items');
+                return;
+            }
+            
+            container.classList.add('has-items');
+            list.innerHTML = savedWritings.map((w, i) => `
+                <div class="writing-item">
+                    <div class="writing-item-header">
+                        <span class="writing-item-word ${doneWords.has(w.word) ? 'done' : ''}">${w.word}</span>
+                        <span class="writing-item-meta">${w.date} · ${w.wordCount} słów</span>
+                    </div>
+                    <div class="writing-item-preview">${w.text.substring(0, 150)}${w.text.length > 150 ? '...' : ''}</div>
+                    <div class="writing-item-actions">
+                        <button class="btn-tiny" onclick="continueWriting(${i})" title="Dopisz">
+                            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </button>
+                        <button class="btn-tiny" onclick="copyWriting(${i})" title="Kopiuj">
+                            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                        <button class="btn-tiny" onclick="deleteWriting(${i})" title="Usuń">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.continueWriting = function(index) {
+            const writing = savedWritings[index];
+            if (!writing) return;
+            
+            // Set the word and enter writing mode
+            currentWord = writing.word;
+            wordInner.textContent = currentWord;
+            wordInner.classList.add('revealed');
+            if (doneWords.has(currentWord)) {
+                wordInner.classList.add('done');
+            }
+            wordGlow.classList.add('active');
+            frame.classList.add('visible');
+            actionButtons.style.display = 'flex';
+            updateDoneButtonState();
+            
+            // Enter writing mode with existing text
+            enterWritingMode();
+            
+            // Pre-fill with existing text after a short delay
+            setTimeout(() => {
+                editorTextarea.value = writing.text + '\n\n';
+                editorTextarea.focus();
+                editorTextarea.setSelectionRange(editorTextarea.value.length, editorTextarea.value.length);
+                updateWordCount();
+            }, 600);
+        };
+
+        window.copyWriting = function(index) {
+            const writing = savedWritings[index];
+            if (writing) {
+                navigator.clipboard.writeText(writing.text);
+            }
+        };
+
+        window.deleteWriting = function(index) {
+            savedWritings.splice(index, 1);
+            saveSavedWritings();
+            renderSavedWritings();
+        };
+
+        function saveCurrentWriting() {
+            if (!currentWritingText.trim()) return;
+            
+            // Check if we have an existing entry for this word
+            const existingIndex = savedWritings.findIndex(w => w.word === currentWord);
+            
+            const wordCount = currentWritingText.trim().split(/\s+/).length;
+            const entry = {
+                word: currentWord,
+                text: currentWritingText,
+                date: new Date().toLocaleDateString('pl-PL'),
+                wordCount: wordCount
+            };
+            
+            if (existingIndex >= 0) {
+                // Update existing
+                savedWritings[existingIndex] = entry;
+            } else {
+                // Add new
+                savedWritings.unshift(entry);
+            }
+            
+            saveSavedWritings();
+            renderSavedWritings();
+            
+            // Feedback
+            const btn = document.getElementById('save-text-btn');
+            if (btn) {
+                btn.querySelector('.btn-text').textContent = 'Zapisano!';
+                setTimeout(() => {
+                    btn.querySelector('.btn-text').textContent = 'Zapisz';
+                }, 2000);
+            }
+        }
+
+        function markWordAsDone() {
+            if (!currentWord) return;
+            
+            if (currentAppMode === 'stories') {
+                doneStories.add(currentWord);
+            } else {
+                doneWords.add(currentWord);
+            }
+            saveSavedWritings();
+            
+            // Update UI
+            wordInner.classList.add('done');
+            renderSavedWritings();
+            updateDoneButtonState();
+            updateDoneCounter();
+            
+            // Feedback for complete screen button
+            const btn = document.getElementById('mark-done-btn');
+            if (btn) {
+                btn.querySelector('.btn-text').textContent = '✓ Załatwione!';
+                btn.disabled = true;
+            }
+        }
+
+        function updateDoneButtonState() {
+            if (!markDoneMainBtn) return;
+            
+            const isDone = currentAppMode === 'stories' 
+                ? doneStories.has(currentWord) 
+                : doneWords.has(currentWord);
+            
+            if (isDone) {
+                markDoneMainBtn.classList.add('active', 'done-active');
+                markDoneMainBtn.disabled = true;
+            } else {
+                markDoneMainBtn.classList.remove('active', 'done-active');
+                markDoneMainBtn.disabled = false;
+            }
+        }
+
+        // ========== DONE MODAL ==========
+        const doneModal = document.getElementById('done-modal');
+        const doneModalClose = document.getElementById('done-modal-close');
+        const doneWordsList = document.getElementById('done-words-list');
+        const doneStoriesList = document.getElementById('done-stories-list');
+
+        function openDoneModal() {
+            renderDoneLists();
+            doneModal.classList.add('active');
+        }
+
+        function closeDoneModal() {
+            doneModal.classList.remove('active');
+        }
+
+        function renderDoneLists() {
+            // Render words
+            if (doneWords.size === 0) {
+                doneWordsList.innerHTML = '<p class="done-empty">Brak załatwionych słów</p>';
+            } else {
+                doneWordsList.innerHTML = [...doneWords].map(word => `
+                    <div class="done-item">
+                        <span class="done-item-text">${word}</span>
+                        <button class="done-item-remove" onclick="removeDoneWord('${word}')" title="Usuń">×</button>
+                    </div>
+                `).join('');
+            }
+            
+            // Render stories
+            if (doneStories.size === 0) {
+                doneStoriesList.innerHTML = '<p class="done-empty">Brak załatwionych historii</p>';
+            } else {
+                doneStoriesList.innerHTML = [...doneStories].map((story, i) => `
+                    <div class="done-item">
+                        <span class="done-item-text story">${story.substring(0, 60)}...</span>
+                        <button class="done-item-remove" onclick="removeDoneStory(${i})" title="Usuń">×</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.removeDoneWord = function(word) {
+            doneWords.delete(word);
+            saveSavedWritings();
+            renderDoneLists();
+            updateDoneCounter();
+            updateDoneButtonState();
+            renderSavedWritings();
+            
+            // Update current word if it's the same
+            if (currentWord === word) {
+                wordInner.classList.remove('done');
+            }
+        };
+
+        window.removeDoneStory = function(index) {
+            const storiesArray = [...doneStories];
+            const story = storiesArray[index];
+            doneStories.delete(story);
+            saveSavedWritings();
+            renderDoneLists();
+            updateDoneCounter();
+            updateDoneButtonState();
+            
+            // Update current word if it's the same
+            if (currentWord === story) {
+                wordInner.classList.remove('done');
+            }
+        };
+
+        // Modal tabs
+        document.querySelectorAll('.done-modal-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.done-modal-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'words') {
+                    doneWordsList.style.display = 'block';
+                    doneStoriesList.style.display = 'none';
+                } else {
+                    doneWordsList.style.display = 'none';
+                    doneStoriesList.style.display = 'block';
+                }
+            });
+        });
+
+        document.getElementById('done-counter').addEventListener('click', openDoneModal);
+        doneModalClose.addEventListener('click', closeDoneModal);
+        doneModal.addEventListener('click', (e) => {
+            if (e.target === doneModal) closeDoneModal();
+        });
 
         function createParticles() {
             particles.innerHTML = '';
@@ -1190,7 +1942,7 @@
             isAnimating = true;
 
             if (wordInner.textContent) {
-                wordInner.classList.remove('revealed');
+                wordInner.classList.remove('revealed', 'done', 'story-mode');
                 wordInner.classList.add('hiding');
                 wordGlow.classList.remove('active');
                 frame.classList.remove('visible');
@@ -1203,9 +1955,64 @@
                 introInfo.classList.add('hidden');
             }
             
-            currentWord = getRandomWord();
-            drawnWords.add(currentWord);
-            wordInner.textContent = currentWord;
+            if (currentAppMode === 'stories') {
+                // Story mode
+                currentWord = getRandomStory();
+                
+                // Handle case when all stories are done
+                if (currentWord === null) {
+                    wordInner.textContent = 'wszystkie historie załatwione!';
+                    wordInner.classList.add('revealed', 'story-mode');
+                    wordGlow.classList.add('active');
+                    wordStage.classList.add('story-active');
+                    actionButtons.style.display = 'none';
+                    setTimeout(() => isAnimating = false, 800);
+                    return;
+                }
+                
+                drawnStories.add(currentWord);
+                wordInner.textContent = currentWord;
+                wordInner.classList.add('story-mode');
+                wordStage.classList.add('story-active');
+                
+                // Show done indicator if story is already done
+                if (doneStories.has(currentWord)) {
+                    wordInner.classList.add('done');
+                }
+                
+                // Show done button, hide speak button in story mode
+                markDoneMainBtn.style.display = '';
+                speakBtn.style.display = 'none';
+                updateDoneButtonState();
+            } else {
+                // Words mode
+                wordStage.classList.remove('story-active');
+                markDoneMainBtn.style.display = '';
+                speakBtn.style.display = '';
+                currentWord = getRandomWord();
+                
+                // Handle case when all words are done
+                if (currentWord === null) {
+                    wordInner.textContent = 'wszystkie załatwione!';
+                    wordInner.classList.add('revealed');
+                    wordGlow.classList.add('active');
+                    actionButtons.style.display = 'none';
+                    setTimeout(() => isAnimating = false, 800);
+                    return;
+                }
+                
+                drawnWords.add(currentWord);
+                wordInner.textContent = currentWord;
+                
+                // Show done indicator if word is already done
+                if (doneWords.has(currentWord)) {
+                    wordInner.classList.add('done');
+                }
+                
+                // Show done button in words mode
+                markDoneMainBtn.style.display = '';
+                updateDoneButtonState();
+            }
 
             await new Promise(r => setTimeout(r, 100));
             createParticles();
@@ -1215,10 +2022,55 @@
             // Show action buttons after first word
             actionButtons.style.display = 'flex';
             
-            if (autoSpeak) setTimeout(() => speakWord(), 300);
+            if (autoSpeak && currentAppMode === 'words') setTimeout(() => speakWord(), 300);
             setTimeout(() => frame.classList.add('visible'), 300);
             setTimeout(() => isAnimating = false, 800);
         }
+
+        // Mode switching
+        function switchAppMode(mode) {
+            if (mode === currentAppMode) return;
+            currentAppMode = mode;
+            
+            // Update tabs
+            document.querySelectorAll('.mode-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.mode === mode);
+            });
+            
+            // Update counter for new mode
+            updateDoneCounter();
+            
+            // Update intro text
+            const introText = document.querySelector('.intro-text');
+            if (introText) {
+                if (mode === 'stories') {
+                    introText.innerHTML = 'Wylosuj początek historii i <strong>dokończ</strong> ją po swojemu.';
+                } else {
+                    introText.innerHTML = 'Wylosuj słowo, a następnie <strong>pisz</strong> lub <strong>nagrywaj</strong> swoje myśli.';
+                }
+            }
+            
+            // Reset word display
+            wordInner.textContent = '';
+            wordInner.classList.remove('revealed', 'done', 'story-mode');
+            wordStage.classList.remove('story-active');
+            wordGlow.classList.remove('active');
+            frame.classList.remove('visible');
+            actionButtons.style.display = 'none';
+            
+            // Reset button visibility
+            speakBtn.style.display = mode === 'stories' ? 'none' : '';
+            
+            // Show intro again
+            if (introInfo) {
+                introInfo.classList.remove('hidden');
+            }
+        }
+
+        // Event listeners for mode toggle
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', () => switchAppMode(tab.dataset.mode));
+        });
 
         // Event listeners for word mode
         drawBtn.addEventListener('click', drawWord);
@@ -1239,6 +2091,7 @@
             // Slow transitions
             header.classList.add('hidden');
             controls.classList.add('hidden');
+            document.getElementById('mode-toggle').classList.add('hidden');
             bgLayer.classList.add('dimmed');
             wordStage.classList.add('compact');
             
@@ -1258,6 +2111,7 @@
             setTimeout(() => {
                 header.classList.remove('hidden');
                 controls.classList.remove('hidden');
+                document.getElementById('mode-toggle').classList.remove('hidden');
                 bgLayer.classList.remove('dimmed');
                 wordStage.classList.remove('compact');
             }, 300);
@@ -1269,6 +2123,7 @@
             
             header.classList.add('hidden');
             controls.classList.add('hidden');
+            document.getElementById('mode-toggle').classList.add('hidden');
             
             setTimeout(() => {
                 document.getElementById('recording-panel').classList.add('active');
@@ -1283,11 +2138,13 @@
             setTimeout(() => {
                 header.classList.remove('hidden');
                 controls.classList.remove('hidden');
+                document.getElementById('mode-toggle').classList.remove('hidden');
             }, 300);
         }
 
         writeBtn.addEventListener('click', enterWritingMode);
         recordModeBtn.addEventListener('click', enterRecordingMode);
+        markDoneMainBtn.addEventListener('click', markWordAsDone);
         document.getElementById('cancel-writing-btn').addEventListener('click', exitWritingMode);
         document.getElementById('back-to-word-btn').addEventListener('click', exitWritingMode);
         document.getElementById('back-from-record-btn').addEventListener('click', exitRecordingMode);
@@ -1435,12 +2292,25 @@
             clearInterval(idleInterval);
             
             const finalText = editorTextarea.value;
+            currentWritingText = finalText; // Store for saving
             const totalWords = updateWordCount();
             
             writingEditor.classList.remove('active');
             
             setTimeout(() => {
                 writingComplete.classList.add('active');
+                
+                // Reset mark done button
+                const markDoneBtn = document.getElementById('mark-done-btn');
+                if (markDoneBtn) {
+                    if (doneWords.has(currentWord)) {
+                        markDoneBtn.querySelector('.btn-text').textContent = '✓ Załatwione!';
+                        markDoneBtn.disabled = true;
+                    } else {
+                        markDoneBtn.querySelector('.btn-text').textContent = '✓ Załatwione';
+                        markDoneBtn.disabled = false;
+                    }
+                }
             }, 300);
             
             const minutes = parseInt(writingTimeInput.value) || 5;
@@ -1470,26 +2340,40 @@
             }, 2000);
         });
 
+        // Save text button
+        document.getElementById('save-text-btn').addEventListener('click', saveCurrentWriting);
+        
+        // Mark word as done button
+        document.getElementById('mark-done-btn').addEventListener('click', markWordAsDone);
+
         editorTextarea.addEventListener('input', () => {
             resetIdleTimer();
             updateWordCount();
         });
 
         editorTextarea.addEventListener('keydown', resetIdleTimer);
+        
+        // Load saved writings on init
+        loadSavedWritings();
 
         // ========== RECORDING MODULE ==========
         let mediaRecorder = null;
         let audioChunks = [];
         let isRecording = false;
+        let isPaused = false;
         let recordingStartTime = null;
         let recordingTimerInterval = null;
         let recordings = [];
         let audioStream = null;
         let lastRecordingMinute = 0;
+        let totalPausedTime = 0;
+        let pauseStartTime = null;
 
         const micVisualizer = document.getElementById('mic-visualizer');
         const recordingTimerDisplay = document.getElementById('recording-timer');
         const recordBtn = document.getElementById('record-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const pauseIcon = document.getElementById('pause-icon');
         const recordingsList = document.getElementById('recordings-list');
         const recordingDots = document.getElementById('recording-dots');
 
@@ -1502,7 +2386,7 @@
 
         // Check recording time for dots
         function checkRecordingDots() {
-            const elapsed = Date.now() - recordingStartTime;
+            const elapsed = getRecordingElapsed();
             const currentMinute = Math.floor(elapsed / 60000);
             
             if (currentMinute > lastRecordingMinute) {
@@ -1511,6 +2395,16 @@
                 }
                 lastRecordingMinute = currentMinute;
             }
+        }
+
+        // Get elapsed recording time (excluding pauses)
+        function getRecordingElapsed() {
+            if (!recordingStartTime) return 0;
+            let elapsed = Date.now() - recordingStartTime - totalPausedTime;
+            if (isPaused && pauseStartTime) {
+                elapsed -= (Date.now() - pauseStartTime);
+            }
+            return Math.max(0, elapsed);
         }
 
         function loadRecordings() {
@@ -1609,9 +2503,35 @@
                 audioStream = null;
             }
             isRecording = false;
+            isPaused = false;
             micVisualizer.classList.remove('recording');
+            micVisualizer.classList.remove('paused');
             recordBtn.querySelector('.btn-text').textContent = 'Nagraj';
+            pauseBtn.style.display = 'none';
             clearInterval(recordingTimerInterval);
+        }
+
+        function togglePause() {
+            if (!isRecording) return;
+            
+            if (isPaused) {
+                // Resume
+                mediaRecorder.resume();
+                isPaused = false;
+                totalPausedTime += Date.now() - pauseStartTime;
+                pauseStartTime = null;
+                micVisualizer.classList.remove('paused');
+                micVisualizer.classList.add('recording');
+                pauseIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+            } else {
+                // Pause
+                mediaRecorder.pause();
+                isPaused = true;
+                pauseStartTime = Date.now();
+                micVisualizer.classList.remove('recording');
+                micVisualizer.classList.add('paused');
+                pauseIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+            }
         }
 
         async function startRecording() {
@@ -1625,23 +2545,23 @@
                 audioStream = await navigator.mediaDevices.getUserMedia({ 
                     audio: {
                         echoCancellation: true,
-                        noiseSuppression: true
+                        noiseSuppression: true,
+                        sampleRate: 44100
                     } 
                 });
                 
-                // Check supported MIME types
+                // Use WAV-compatible format for better MP3 conversion
                 let mimeType = 'audio/webm';
                 if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
                     mimeType = 'audio/webm;codecs=opus';
-                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                    mimeType = 'audio/mp4';
-                } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
-                    mimeType = 'audio/ogg';
                 }
 
                 mediaRecorder = new MediaRecorder(audioStream, { mimeType });
                 audioChunks = [];
                 recordingStartTime = Date.now();
+                totalPausedTime = 0;
+                pauseStartTime = null;
+                isPaused = false;
 
                 mediaRecorder.ondataavailable = (e) => {
                     if (e.data.size > 0) {
@@ -1649,11 +2569,11 @@
                     }
                 };
                 
-                mediaRecorder.onstop = () => {
-                    const duration = Date.now() - recordingStartTime;
+                mediaRecorder.onstop = async () => {
+                    const duration = getRecordingElapsed();
                     const blob = new Blob(audioChunks, { type: mimeType });
-                    const reader = new FileReader();
                     
+                    const reader = new FileReader();
                     reader.onloadend = () => {
                         recordings.unshift({
                             word: currentWord,
@@ -1664,11 +2584,6 @@
                         saveRecordings();
                         renderRecordings();
                     };
-                    
-                    reader.onerror = () => {
-                        console.error('Błąd odczytu nagrania');
-                    };
-                    
                     reader.readAsDataURL(blob);
                     
                     if (audioStream) {
@@ -1687,14 +2602,17 @@
                 isRecording = true;
                 micVisualizer.classList.add('recording');
                 recordBtn.querySelector('.btn-text').textContent = 'Zatrzymaj';
+                pauseBtn.style.display = 'flex';
                 
                 // Reset dots
                 lastRecordingMinute = 0;
                 recordingDots.innerHTML = '';
                 
                 recordingTimerInterval = setInterval(() => {
-                    recordingTimerDisplay.textContent = formatRecordingTime(Date.now() - recordingStartTime);
-                    checkRecordingDots();
+                    if (!isPaused) {
+                        recordingTimerDisplay.textContent = formatRecordingTime(getRecordingElapsed());
+                        checkRecordingDots();
+                    }
                 }, 100);
 
             } catch (err) {
@@ -1720,6 +2638,7 @@
             }
         }
 
+        pauseBtn.addEventListener('click', togglePause);
         recordBtn.addEventListener('click', toggleRecording);
         loadRecordings();
     </script>
