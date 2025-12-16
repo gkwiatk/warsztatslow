@@ -123,6 +123,7 @@
             opacity: 0;
             animation: fadeIn 1s ease-out 0.3s forwards;
             transition: opacity 1s ease, transform 1s ease;
+            position: relative;
         }
 
         .header.hidden {
@@ -172,6 +173,129 @@
 
         .done-counter.visible {
             opacity: 1;
+        }
+
+        /* Settings button */
+        .settings-btn {
+            position: absolute;
+            top: 0;
+            right: -40px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.3rem;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        .settings-btn.has-key {
+            color: var(--accent);
+            opacity: 0.8;
+        }
+
+        /* Settings modal content */
+        .settings-content {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .settings-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .settings-info a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .settings-info a:hover {
+            text-decoration: underline;
+        }
+
+        .settings-field {
+            position: relative;
+        }
+
+        .settings-label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .settings-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(201, 168, 124, 0.2);
+            border-radius: 4px;
+            padding: 0.6rem 2.5rem 0.6rem 0.8rem;
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .settings-input:focus {
+            border-color: var(--accent);
+        }
+
+        .settings-toggle-visibility {
+            position: absolute;
+            right: 0.5rem;
+            bottom: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .settings-toggle-visibility:hover {
+            color: var(--accent);
+        }
+
+        .settings-warning {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(255, 150, 50, 0.1);
+            border: 1px solid rgba(255, 150, 50, 0.2);
+            border-radius: 4px;
+            padding: 0.6rem 0.8rem;
+            line-height: 1.5;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .settings-status {
+            font-size: 0.75rem;
+            text-align: center;
+            min-height: 1.2em;
+        }
+
+        .settings-status.success {
+            color: rgba(100, 200, 100, 0.9);
+        }
+
+        .settings-status.error {
+            color: rgba(255, 100, 100, 0.9);
         }
 
         /* Done modal */
@@ -1137,6 +1261,22 @@
             padding: 0.75rem 1rem;
             border-bottom: 1px solid rgba(201, 168, 124, 0.1);
             background: rgba(0, 0, 0, 0.2);
+            gap: 0.5rem;
+        }
+
+        .dialog-settings-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.3rem;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .dialog-settings-btn:hover {
+            opacity: 1;
+            color: var(--accent);
         }
 
         .dialog-prompt {
@@ -1521,6 +1661,12 @@
 
     <div class="container">
         <header class="header" id="header">
+            <button class="settings-btn" id="settings-btn" title="Ustawienia API">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.5" fill="none">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                </svg>
+            </button>
             <p class="subtitle">warsztat</p>
             <h1 class="title">Słów</h1>
             <p class="done-counter" id="done-counter"></p>
@@ -1555,6 +1701,42 @@
                 </div>
                 <div class="done-modal-list" id="all-words-list"></div>
                 <div class="done-modal-list" id="all-stories-list" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Settings modal -->
+        <div class="done-modal" id="settings-modal">
+            <div class="done-modal-content" style="max-width: 360px;">
+                <div class="done-modal-header">
+                    <h3 class="done-modal-title">Ustawienia API</h3>
+                    <button class="done-modal-close" id="settings-modal-close">×</button>
+                </div>
+                <div class="settings-content">
+                    <p class="settings-info">
+                        Tryb "Rozmawiaj" wymaga klucza API Anthropic.<br>
+                        Uzyskaj go na <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br><br>
+                        <strong>Ważne:</strong> W ustawieniach klucza włącz opcję<br>"Allow browser use" (anthropic-dangerous-direct-browser-access)
+                    </p>
+                    <div class="settings-field">
+                        <label class="settings-label">Klucz API</label>
+                        <input type="password" class="settings-input" id="api-key-input" placeholder="sk-ant-...">
+                        <button class="settings-toggle-visibility" id="toggle-key-visibility" title="Pokaż/ukryj">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.5" fill="none">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="settings-actions">
+                        <button class="btn btn-small" id="save-api-key-btn">
+                            <span class="btn-text">Zapisz</span>
+                        </button>
+                        <button class="btn btn-small" id="clear-api-key-btn">
+                            <span class="btn-text">Usuń klucz</span>
+                        </button>
+                    </div>
+                    <div class="settings-status" id="api-key-status"></div>
+                </div>
             </div>
         </div>
 
@@ -1713,6 +1895,12 @@
         <div class="dialog-panel" id="dialog-panel">
             <div class="dialog-header">
                 <span class="dialog-prompt" id="dialog-prompt"></span>
+                <button class="dialog-settings-btn" id="dialog-settings-btn" title="Ustawienia API">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.5" fill="none">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                    </svg>
+                </button>
                 <button class="btn btn-small" id="cancel-dialog-btn">
                     <span class="btn-text">Zakończ</span>
                 </button>
@@ -2668,6 +2856,76 @@
         document.getElementById('back-from-record-btn').addEventListener('click', exitRecordingMode);
         document.getElementById('cancel-dialog-btn').addEventListener('click', exitDialogMode);
 
+        // ========== API SETTINGS ==========
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModalClose = document.getElementById('settings-modal-close');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const apiKeyStatus = document.getElementById('api-key-status');
+
+        function getApiKey() {
+            return localStorage.getItem('workshopApiKey') || '';
+        }
+
+        function setApiKey(key) {
+            if (key) {
+                localStorage.setItem('workshopApiKey', key);
+            } else {
+                localStorage.removeItem('workshopApiKey');
+            }
+            updateSettingsButtonState();
+        }
+
+        function updateSettingsButtonState() {
+            const hasKey = !!getApiKey();
+            settingsBtn.classList.toggle('has-key', hasKey);
+        }
+
+        function openSettingsModal() {
+            apiKeyInput.value = getApiKey();
+            apiKeyStatus.textContent = '';
+            apiKeyStatus.className = 'settings-status';
+            settingsModal.classList.add('active');
+        }
+
+        function closeSettingsModal() {
+            settingsModal.classList.remove('active');
+        }
+
+        settingsBtn.addEventListener('click', openSettingsModal);
+        document.getElementById('dialog-settings-btn').addEventListener('click', openSettingsModal);
+        settingsModalClose.addEventListener('click', closeSettingsModal);
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) closeSettingsModal();
+        });
+
+        document.getElementById('toggle-key-visibility').addEventListener('click', () => {
+            const input = apiKeyInput;
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
+
+        document.getElementById('save-api-key-btn').addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key && !key.startsWith('sk-ant-')) {
+                apiKeyStatus.textContent = 'Klucz powinien zaczynać się od sk-ant-';
+                apiKeyStatus.className = 'settings-status error';
+                return;
+            }
+            setApiKey(key);
+            apiKeyStatus.textContent = key ? 'Klucz zapisany!' : 'Klucz usunięty';
+            apiKeyStatus.className = 'settings-status success';
+        });
+
+        document.getElementById('clear-api-key-btn').addEventListener('click', () => {
+            apiKeyInput.value = '';
+            setApiKey('');
+            apiKeyStatus.textContent = 'Klucz usunięty';
+            apiKeyStatus.className = 'settings-status success';
+        });
+
+        // Initialize settings button state
+        updateSettingsButtonState();
+
         // ========== DIALOG MODULE ==========
         let dialogMessages = [];
         let isWaitingForAI = false;
@@ -2702,11 +2960,17 @@
                 dialogPanel.classList.add('active');
                 dialogInput.focus();
                 
-                // Add initial AI message
-                const initialMessage = currentAppMode === 'stories' 
-                    ? 'Opowiedz mi więcej o tej historii. Co dzieje się dalej? Kim są bohaterowie?'
-                    : 'Opowiedz mi, co przychodzi Ci na myśl, gdy słyszysz to słowo. Jakie wspomnienia lub obrazy się pojawiają?';
-                addMessage('assistant', initialMessage);
+                // Check for API key and show appropriate message
+                const apiKey = getApiKey();
+                if (!apiKey) {
+                    addMessage('assistant', '⚙️ Aby rozpocząć rozmowę, najpierw dodaj klucz API Anthropic w ustawieniach (ikona zębatki w nagłówku). Klucz możesz uzyskać na console.anthropic.com');
+                } else {
+                    // Add initial AI message
+                    const initialMessage = currentAppMode === 'stories' 
+                        ? 'Opowiedz mi więcej o tej historii. Co dzieje się dalej? Kim są bohaterowie?'
+                        : 'Opowiedz mi, co przychodzi Ci na myśl, gdy słyszysz to słowo. Jakie wspomnienia lub obrazy się pojawiają?';
+                    addMessage('assistant', initialMessage);
+                }
             }, 500);
         }
 
@@ -2754,6 +3018,13 @@
             const userMessage = dialogInput.value.trim();
             if (!userMessage || isWaitingForAI) return;
             
+            // Check for API key
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                addMessage('assistant', 'Aby korzystać z trybu rozmowy, dodaj klucz API w ustawieniach (ikona ⚙️ w nagłówku).');
+                return;
+            }
+            
             dialogInput.value = '';
             addMessage('user', userMessage);
             
@@ -2779,9 +3050,12 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
                     },
                     body: JSON.stringify({
-                        model: 'claude-sonnet-4-20250514',
+                        model: 'claude-3-haiku-20240307',
                         max_tokens: 300,
                         system: systemPrompt,
                         messages: messages
@@ -2793,12 +3067,14 @@
                 
                 if (data.content && data.content[0] && data.content[0].text) {
                     addMessage('assistant', data.content[0].text);
+                } else if (data.error) {
+                    addMessage('assistant', `Błąd API: ${data.error.message || 'Sprawdź klucz API w ustawieniach.'}`);
                 } else {
                     addMessage('assistant', 'Przepraszam, coś poszło nie tak. Spróbuj jeszcze raz.');
                 }
             } catch (error) {
                 removeTypingIndicator();
-                addMessage('assistant', 'Nie udało się połączyć. Sprawdź połączenie internetowe.');
+                addMessage('assistant', 'Nie udało się połączyć. Sprawdź połączenie internetowe i klucz API.');
                 console.error('Dialog error:', error);
             }
             
